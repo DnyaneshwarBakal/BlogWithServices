@@ -1,23 +1,23 @@
-// File: /api/index.js
+ // File: /api/index.js
 
 // --- Imports ---
-// Use CommonJS 'require' syntax for a Node.js environment
-const express = require('express');
-const dotenv = require('dotenv');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+import express from 'express';
+import dotenv from 'dotenv';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// --- Initializations ---
-dotenv.config();
+// --- THIS IS THE CRITICAL FIX ---
+// Explicitly tell dotenv which file to load for local development.
+dotenv.config({ path: './.env.local' });
+
 const app = express();
 
 // --- Middleware ---
-// This is crucial for Express to be able to parse JSON bodies from POST requests
 app.use(express.json());
 
 // --- Gemini AI Configuration ---
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
-  // This will cause an error during deployment if the key is missing
+  // This check will now pass because dotenv has loaded the key.
   throw new Error("FATAL ERROR: The GEMINI_API_KEY environment variable is not configured.");
 }
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -54,8 +54,16 @@ app.post('/api/generateBlog', async (req, res) => {
 
 
 // ==========================================================
-// ---                VERCEL EXPORT                       ---
+// ---          LOCAL DEVELOPMENT & VERCEL EXPORT         ---
 // ==========================================================
-// This is the crucial part that replaces 'app.listen()'.
-// It allows Vercel to take your Express app and run it as a serverless function.
-module.exports = app;
+
+// This line is used by Vercel to run the file as a serverless function
+export default app;
+
+// This block is for local development only. It will be ignored by Vercel.
+if (process.env.NODE_ENV !== 'production') {
+  const port = 3001;
+  app.listen(port, () => {
+    console.log(`✅ API server ready on http://localhost:${port}`);
+  });
+}

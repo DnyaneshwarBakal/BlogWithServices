@@ -35,7 +35,7 @@ function HomePage() {
           textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
         }}
       >
-        Welcome to Our Website
+        Welcome to DS Technologies!!
       </Typography>
       <Typography 
         variant="h5" 

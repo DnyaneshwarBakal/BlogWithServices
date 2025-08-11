@@ -1,14 +1,19 @@
-import React, { useState, useMemo, useEffect } from 'react'; // 1. Import useEffect
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, GlobalStyles } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import { GlobalStyles } from '@mui/material';
 
-import Navbar from './components/Navbar.jsx';
-import HomePage from './components/HomePage.jsx';
-import Blog from './components/Blog.jsx';
-import Services from './components/Services.jsx';
-import About from './components/About.jsx';
-import Contact from './components/Contact.jsx';
+import Navbar from './components/Navbar';
+import Team from './components/Team';
+import Blog from './components/Blog';
+import BlogDetail from './components/BlogDetail';
+import Services from './components/Services';
+import About from './components/About';
+import Contact from './components/Contact';
+import LandingPage from './components/LandingPage';
+import ProtectedRoute from './components/ProtectedRoute'; // Keep this for future use if needed
 
 const gradientAnimation = {
   '@keyframes gradientAnimation': {
@@ -17,6 +22,28 @@ const gradientAnimation = {
     '100%': { backgroundPosition: '0% 50%' },
   },
 };
+
+const AppLayout = ({ mode, toggleColorMode }) => (
+  <>
+    <Navbar mode={mode} toggleColorMode={toggleColorMode} />
+    <Box
+      component="main"
+      sx={{
+        width: '100%',
+        minHeight: 'calc(100vh - 64px)',
+        background: (theme) =>
+          theme.palette.mode === 'light'
+            ? 'linear-gradient(-45deg, #ee7752, #ddf0a5ff, #23a6d5, #23d5ab)'
+            : 'linear-gradient(-45deg, #023, #023e8a, #edeff0ff, #0096c7)',
+        backgroundSize: '400% 400%',
+        animation: 'gradientAnimation 15s ease infinite',
+        py: 4,
+      }}
+    >
+      <Outlet />
+    </Box>
+  </>
+);
 
 function App() {
   const [mode, setMode] = useState(() => {
@@ -30,62 +57,54 @@ function App() {
     localStorage.setItem('themeMode', newMode);
   };
 
-  // ======================================================================
-  // == ADDED FUNCTIONALITY: Disable Right-Click and DevTools shortcuts  ==
-  // ======================================================================
   useEffect(() => {
-    // Handler to prevent the context menu (right-click)
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-    };
-
-    // Handler to block certain key combinations
+    const handleContextMenu = (e) => e.preventDefault();
     const handleKeyDown = (e) => {
-      // Block F12
-      if (e.key === 'F12') {
-        e.preventDefault();
-      }
-      // Block Ctrl+Shift+I
-      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-        e.preventDefault();
-      }
-      // Block Ctrl+Shift+J
-      if (e.ctrlKey && e.shiftKey && e.key === 'J') {
-        e.preventDefault();
-      }
-      // Block Ctrl+U
-      if (e.ctrlKey && e.key === 'u') {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+        (e.ctrlKey && e.key === 'u')
+      ) {
         e.preventDefault();
       }
     };
-
-    // Add event listeners when the component mounts
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('keydown', handleKeyDown);
-
-    // Cleanup function to remove event listeners when the component unmounts
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []); // The empty dependency array ensures this runs only once.
+  }, []);
 
-  const theme = useMemo(() => createTheme({ palette: { mode } }), [mode]);
+  const theme = useMemo(() => createTheme({
+    palette: {
+      mode,
+    },
+  }), [mode]);
+
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <AppLayout mode={mode} toggleColorMode={toggleColorMode} />,
+      children: [
+        { index: true, element: <LandingPage /> },
+        { path: 'blog', element: <Blog /> },
+        { path: 'blog/:id', element: <BlogDetail /> },
+        { path: 'services', element: <Services /> },
+         { path: 'contact', element: <Contact /> }, 
+        {path:'team', element:<Team />},
+        { path: 'about', element: <About /> },
+       
+      ],
+    },
+  ]);
 
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <CssBaseline />
-        <GlobalStyles styles={gradientAnimation} />
-        <Navbar mode={mode} toggleColorMode={toggleColorMode} />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </Router>
+      <CssBaseline />
+      <GlobalStyles styles={gradientAnimation} />
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }

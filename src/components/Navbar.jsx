@@ -1,30 +1,66 @@
 import React, { useState } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useLoginModal } from '../context/LoginModalContext';
 import {
-  AppBar, Toolbar, Typography, Box, Button, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, InputBase, alpha, styled,
+  AppBar,
+  Toolbar,
+  Button,
+  IconButton,
+  Drawer,
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
 } from '@mui/material';
-import { Menu as MenuIcon, Search as SearchIcon, Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 
-// --- Styled Components (No Change) ---
-const Search = styled('div')(({ theme }) => ({ position: 'relative', borderRadius: theme.shape.borderRadius, backgroundColor: alpha(theme.palette.common.white, 0.15), '&:hover': { backgroundColor: alpha(theme.palette.common.white, 0.25) }, marginLeft: theme.spacing(2), width: 'auto' }));
-const SearchIconWrapper = styled('div')(({ theme }) => ({ padding: theme.spacing(0, 2), height: '100%', position: 'absolute', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }));
-const StyledInputBase = styled(InputBase)(({ theme }) => ({ color: 'inherit', '& .MuiInputBase-input': { padding: theme.spacing(1, 1, 1, 0), paddingLeft: `calc(1em + ${theme.spacing(4)})`, transition: theme.transitions.create('width'), width: '100%', [theme.breakpoints.up('md')]: { width: '20ch', '&:focus': { width: '30ch' } } } }));
-
+// --- UPDATED navItems array ---
 const navItems = [
   { text: 'Blog', path: '/blog' },
   { text: 'Services', path: '/services' },
   { text: 'About', path: '/about' },
   { text: 'Contact', path: '/contact' },
+  { text: 'Team', path: '/team' }, // Added Team page
 ];
 
+const Logo = () => (
+  <img 
+    src="/dsTech.jpeg"
+    alt="DS Technologies Logo" 
+    style={{ height: 40, verticalAlign: 'middle' }}
+  />
+);
+
 function Navbar({ mode, toggleColorMode }) {
+  const { currentUser, logout } = useAuth();
+  const { openLoginModal } = useLoginModal();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
   const handleDrawerToggle = () => setMobileOpen((prevState) => !prevState);
-  const location = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/'); // Redirect to landing page after logout
+    } catch (error) {
+      console.error('Failed to log out', error);
+    }
+  };
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>MyLogo</Typography>
+      <Box component={RouterLink} to="/" sx={{ my: 2, display: 'inline-block' }}>
+        <Logo />
+      </Box>
       <List>
         {navItems.map((item) => (
           <ListItem key={item.text} disablePadding>
@@ -33,6 +69,25 @@ function Navbar({ mode, toggleColorMode }) {
             </ListItemButton>
           </ListItem>
         ))}
+        {currentUser ? (
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleLogout} sx={{ justifyContent: 'center' }}>
+              <ListItemIcon sx={{ minWidth: 'auto', mr: 1, justifyContent: 'center' }}>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </ListItem>
+        ) : (
+          <ListItem disablePadding>
+            <ListItemButton onClick={openLoginModal} sx={{ justifyContent: 'center' }}>
+              <ListItemIcon sx={{ minWidth: 'auto', mr: 1, justifyContent: 'center' }}>
+                <LoginIcon />
+              </ListItemIcon>
+              <ListItemText primary="Login" />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
     </Box>
   );
@@ -41,27 +96,64 @@ function Navbar({ mode, toggleColorMode }) {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' } }}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component={RouterLink} to="/" sx={{ display: { xs: 'none', sm: 'block' }, color: 'inherit', textDecoration: 'none' }}>
-            MyLogo
-          </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'block' }, ml: 3 }}>
+          
+          {/* Logo */}
+          <Box component={RouterLink} to="/" sx={{ flexGrow: 1, display: {xs: 'none', sm: 'block'} }}>
+            <Logo />
+          </Box>
+          
+          {/* Desktop Nav Links */}
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item) => (
               <Button key={item.text} component={RouterLink} to={item.path} sx={{ color: '#fff' }}>
                 {item.text}
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Spacer to push subsequent items to the right */}
+          <Box sx={{ flexGrow: 1, display: {xs: 'block', sm: 'none'} }} />
+
+          {/* Login/Logout Buttons for Desktop */}
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            {currentUser ? (
+              <Button color="inherit" startIcon={<LogoutIcon />} onClick={handleLogout}>
+                Logout
+              </Button>
+            ) : (
+              <Button color="inherit" startIcon={<LoginIcon />} onClick={openLoginModal}>
+                Login
+              </Button>
+            )}
+          </Box>
+          
+          {/* Theme Toggle Button */}
           <IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
             {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
         </Toolbar>
       </AppBar>
+
       <Box component="nav">
-        <Drawer variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }} sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 } }}>
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+          }}
+        >
           {drawer}
         </Drawer>
       </Box>

@@ -1,0 +1,25 @@
+ const systemPrompt = `Explain "${latestUserMessage}"in simple terms first. Cover what it is, why it matters, how it works, key features or characteristics, and real-world examples. If relevant, include a short code snippet, diagram, or analogy to make it easier to understand. `;
+
+old key GEMINI_API_KEY="AIzaSyBXw3HnRkiUlJ-GKY_spz1naqZ6q6e2EBo"
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: ""AIzaSyAONSk_EhcVfLQkHsai1VcR5T5FnHmpOoU"",
+  authDomain: "contact-form-data-3387d.firebaseapp.com",
+  projectId: "contact-form-data-3387d",
+  storageBucket: "contact-form-data-3387d.firebasestorage.app",
+  messagingSenderId: "404715537472",
+  appId: "1:404715537472:web:0f1d9726538b3e64e88ba5",
+  measurementId: "G-WZVE0L4D5L"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);

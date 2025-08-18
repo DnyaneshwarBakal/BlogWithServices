@@ -28,7 +28,8 @@ const navItems = [
   { text: 'Services', path: '/services' },
   { text: 'About', path: '/about' },
   { text: 'Contact', path: '/contact' },
-  { text: 'Team', path: '/team' }, // Added Team page
+  { text: 'Team', path: '/team' },
+   { text: 'HDFCGPT', path: '/hdfcgpt' }, // Added Team page
 ];
 
 const Logo = () => (

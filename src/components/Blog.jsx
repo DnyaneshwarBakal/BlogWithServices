@@ -61,7 +61,7 @@ function BlogPostCard({ post, onStartEditing, onDelete, currentUser }) {
             {post.title}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{
-            wordWrap: 'break-word',
+            wordWrap: 'break-word', 
             display: '-webkit-box',
             WebkitBoxOrient: 'vertical',
             WebkitLineClamp: 4,
@@ -241,35 +241,40 @@ function Blog() {
   // It is already correctly written and does not need changes.
   //
   // ==========================================================
-  const handleGenerateContent = async () => {
-    // This empty function block is based on your provided code.
-    // The actual logic with the fetch call would be inside here.
-    // For example:
-    if (newPost.title.trim() === '') {
-      alert('Please provide a title to generate content.');
-      return;
+  // In Blog.jsx
+
+const handleGenerateContent = async () => {
+  if (newPost.title.trim() === '') {
+    alert('Please provide a title to generate content.');
+    return;
+  }
+  setIsGenerating(true);
+  try {
+    // CHANGE THIS URL to your new endpoint
+    const response = await fetch('/api/generateBlog', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title: newPost.title }),
+    });
+
+    if (!response.ok) {
+      // Improved error handling
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to generate content');
     }
-    setIsGenerating(true);
-    try {
-      const response = await fetch('/api/generateBlog', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title: newPost.title }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to generate content');
-      }
-      const data = await response.json();
-      setNewPost(prev => ({ ...prev, content: data.content }));
-    } catch (error) {
-      console.error('Error generating content:', error);
-      alert('There was an error generating the blog content.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+
+    const data = await response.json();
+    setNewPost(prev => ({ ...prev, content: data.content }));
+
+  } catch (error) {
+    console.error('Error generating content:', error);
+    alert(`There was an error generating the blog content: ${error.message}`);
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

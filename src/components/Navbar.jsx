@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLoginModal } from '../context/LoginModalContext';
 import {
@@ -22,14 +21,16 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-// --- UPDATED navItems array ---
+// --- NEW: Import the ConfirmationDialog component ---
+import ConfirmationDialog from './ConfirmationDialog'; // Make sure the path is correct
+
 const navItems = [
   { text: 'Blog', path: '/blog' },
   { text: 'Services', path: '/services' },
   { text: 'About', path: '/about' },
   { text: 'Contact', path: '/contact' },
   { text: 'Team', path: '/team' },
-   { text: 'HDFCGPT', path: '/hdfcgpt' }, // Added Team page
+  { text: 'HDFCGPT', path: '/hdfcgpt' },
 ];
 
 const Logo = () => (
@@ -46,9 +47,14 @@ function Navbar({ mode, toggleColorMode }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // --- NEW: State for controlling the logout confirmation dialog ---
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+
   const handleDrawerToggle = () => setMobileOpen((prevState) => !prevState);
 
-  const handleLogout = async () => {
+  // --- UPDATED: This function now runs only AFTER the user confirms the action ---
+  const handleConfirmLogout = async () => {
+    setIsLogoutDialogOpen(false); // Close the dialog first
     try {
       await logout();
       navigate('/'); // Redirect to landing page after logout
@@ -57,6 +63,7 @@ function Navbar({ mode, toggleColorMode }) {
     }
   };
 
+  // --- UPDATED: The mobile drawer now opens the confirmation dialog ---
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Box component={RouterLink} to="/" sx={{ my: 2, display: 'inline-block' }}>
@@ -72,7 +79,8 @@ function Navbar({ mode, toggleColorMode }) {
         ))}
         {currentUser ? (
           <ListItem disablePadding>
-            <ListItemButton onClick={handleLogout} sx={{ justifyContent: 'center' }}>
+            {/* UPDATED: onClick now opens the dialog */}
+            <ListItemButton onClick={() => setIsLogoutDialogOpen(true)} sx={{ justifyContent: 'center' }}>
               <ListItemIcon sx={{ minWidth: 'auto', mr: 1, justifyContent: 'center' }}>
                 <LogoutIcon />
               </ListItemIcon>
@@ -107,12 +115,10 @@ function Navbar({ mode, toggleColorMode }) {
             <MenuIcon />
           </IconButton>
           
-          {/* Logo */}
           <Box component={RouterLink} to="/" sx={{ flexGrow: 1, display: {xs: 'none', sm: 'block'} }}>
             <Logo />
           </Box>
           
-          {/* Desktop Nav Links */}
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item) => (
               <Button key={item.text} component={RouterLink} to={item.path} sx={{ color: '#fff' }}>
@@ -121,13 +127,13 @@ function Navbar({ mode, toggleColorMode }) {
             ))}
           </Box>
 
-          {/* Spacer to push subsequent items to the right */}
           <Box sx={{ flexGrow: 1, display: {xs: 'block', sm: 'none'} }} />
 
-          {/* Login/Logout Buttons for Desktop */}
+          {/* --- UPDATED: Login/Logout Buttons for Desktop --- */}
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {currentUser ? (
-              <Button color="inherit" startIcon={<LogoutIcon />} onClick={handleLogout}>
+              // UPDATED: onClick now opens the dialog
+              <Button color="inherit" startIcon={<LogoutIcon />} onClick={() => setIsLogoutDialogOpen(true)}>
                 Logout
               </Button>
             ) : (
@@ -137,7 +143,6 @@ function Navbar({ mode, toggleColorMode }) {
             )}
           </Box>
           
-          {/* Theme Toggle Button */}
           <IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
             {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
@@ -158,6 +163,16 @@ function Navbar({ mode, toggleColorMode }) {
           {drawer}
         </Drawer>
       </Box>
+
+      {/* --- NEW: Render the ConfirmationDialog --- */}
+      <ConfirmationDialog
+        open={isLogoutDialogOpen}
+        onClose={() => setIsLogoutDialogOpen(false)}
+        onConfirm={handleConfirmLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to sign out?"
+        confirmButtonColor="#d32f2f" // Custom red color for confirmation
+      />
     </Box>
   );
 }

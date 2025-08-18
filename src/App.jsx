@@ -7,6 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import { GlobalStyles } from '@mui/material';
 
+
 // --- COMPONENT IMPORTS ---
 import Navbar from './components/Navbar';
 import Team from './components/Team';
@@ -18,6 +19,8 @@ import Contact from './components/Contact';
 import LandingPage from './components/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import HdfcGpt from './components/HdfcGpt'; // <-- 1. IMPORT THE NEW HDFCGPT COMPONENT
+
+
 
 const gradientAnimation = {
   '@keyframes gradientAnimation': {

@@ -114,7 +114,7 @@ function Services() {
 
             <Grid container spacing={4} justifyContent="center">
                 {servicesData.map((service, index) => (
-                    <Grid item key={index} xs={12} sm={4} md={4} lg={3}>
+                    <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
                         <Card
                             sx={{
                                 height: '100%',

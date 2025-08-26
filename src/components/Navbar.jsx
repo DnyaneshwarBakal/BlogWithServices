@@ -22,7 +22,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 // --- NEW: Import the ConfirmationDialog component ---
-import ConfirmationDialog from './ConfirmationDialog'; // Make sure the path is correct
+import ConfirmationDialog from './ConfirmationDialog';  
 
 const navItems = [
   { text: 'Blog', path: '/blog' },
@@ -52,7 +52,7 @@ function Navbar({ mode, toggleColorMode }) {
 
   const handleDrawerToggle = () => setMobileOpen((prevState) => !prevState);
 
-  // --- UPDATED: This function now runs only AFTER the user confirms the action ---
+  // ---  This function now runs only AFTER the user confirms the action ---
   const handleConfirmLogout = async () => {
     setIsLogoutDialogOpen(false); // Close the dialog first
     try {

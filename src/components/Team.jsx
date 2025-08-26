@@ -5,7 +5,7 @@ import {
   Box,
   Grid,
   Card,
-  CardMedia, // Import CardMedia for the rectangular image
+  CardMedia,  
   CardContent,
   IconButton,
   CardActions,
@@ -25,7 +25,7 @@ const teamData = [
     title: 'Founder & CEO',
     experience: '12+ Years',
     description: 'Leading our team with a vision for innovation and a passion for technology that drives client success.',
-    imageUrl: 'mauli1.jpeg', // Replace with your image paths
+    imageUrl: 'mauli1.jpeg',  
     socials: { linkedin: '#', twitter: '#' },
   },
   {
@@ -33,7 +33,7 @@ const teamData = [
     title: 'Backend Developer',
     experience: '5+ Years',
     description: 'A dedicated backend developer focused on building robust, scalable, and secure applications.',
-    imageUrl: 'wBaba.jpeg', // Replace with your image paths
+    imageUrl: 'wBaba.jpeg',   
     socials: { linkedin: '#', github: '#' },
   },
   {
@@ -113,7 +113,7 @@ function Team() {
                 boxShadow: (theme) => theme.shadows[6],
               }}
             >
-              {/* --- IMAGE IS NOW A RECTANGULAR CardMedia --- */}
+               
               <CardMedia
                 component="img"
                 height="250" // You can adjust this height

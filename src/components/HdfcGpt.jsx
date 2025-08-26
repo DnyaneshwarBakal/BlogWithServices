@@ -15,21 +15,35 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
-// --- NEW: Import the single delete icon ---
 import DeleteIcon from '@mui/icons-material/Delete';
+import ReactMarkdown from 'react-markdown'; //  IMPORT REACT MARKDOWN
 
-// --- Sub-component for a single chat message ---
+// --- Sub-component for a single chat message (MODIFIED) ---
 const Message = ({ message }) => (
   <Box sx={{ display: 'flex', justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start', mb: 2, gap: 1.5, alignItems: 'flex-start' }}>
     {message.role === 'model' && <Avatar sx={{ bgcolor: 'secondary.main' }}><SmartToyIcon /></Avatar>}
-    <Paper elevation={2} sx={{ p: 1.5, backgroundColor: message.role === 'user' ? 'primary.main' : 'background.paper', color: message.role === 'user' ? 'primary.contrastText' : 'text.primary', borderRadius: message.role === 'user' ? '20px 20px 5px 20px' : '20px 20px 20px 5px', maxWidth: '80%' }}>
-      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{message.content}</Typography>
+    <Paper
+      elevation={2}
+      sx={{
+        p: 1.5,
+        backgroundColor: message.role === 'user' ? 'primary.main' : 'background.paper',
+        color: message.role === 'user' ? 'primary.contrastText' : 'text.primary',
+        borderRadius: message.role === 'user' ? '20px 20px 5px 20px' : '20px 20px 20px 5px',
+        maxWidth: '80%',
+        // Optional but recommended: Add styles for markdown elements to look good in chat bubbles
+        '& h1, & h2, & h3, & h4, & h5, & h6': { marginTop: 0, marginBottom: '8px' },
+        '& p': { margin: 0 },
+        '& ul, & ol': { marginTop: 0, paddingLeft: '20px' },
+      }}
+    >
+      {/* 2. USE REACT MARKDOWN TO RENDER THE CONTENT */}
+      <ReactMarkdown>{message.content}</ReactMarkdown>
     </Paper>
     {message.role === 'user' && <Avatar><PersonIcon /></Avatar>}
   </Box>
 );
 
-// --- Sub-component for the history panel (MODIFIED) ---
+// --- Sub-component for the history panel ---
 const HistoryPanel = ({ conversations, onSelectConversation, onNewChat, onOpenDeleteDialog, onOpenSingleDeleteDialog, activeId }) => (
   <Box
     sx={{
@@ -136,7 +150,7 @@ const ChatWindow = ({ conversation, onSendMessage, userInput, setUserInput, isLo
   );
 };
 
-// --- The Main HDFCGPT Page Component (MODIFIED) ---
+// --- The Main HDFCGPT Page Component ---
 function HdfcGpt() {
   const { currentUser } = useAuth();
   const { openLoginModal } = useLoginModal();
@@ -146,8 +160,6 @@ function HdfcGpt() {
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  // --- NEW STATE: For single chat deletion ---
   const [isSingleDeleteDialogOpen, setIsSingleDeleteDialogOpen] = useState(false);
   const [chatToDeleteId, setChatToDeleteId] = useState(null);
 
@@ -237,7 +249,6 @@ function HdfcGpt() {
     setSearchParams({ chatId: conv.id });
   };
 
-  // --- Handlers for "Delete All" dialog ---
   const handleOpenDeleteDialog = () => setIsDeleteDialogOpen(true);
   const handleCloseDeleteDialog = () => setIsDeleteDialogOpen(false);
 
@@ -259,7 +270,6 @@ function HdfcGpt() {
     }
   };
 
-  // --- NEW: Handlers for "Delete Single Chat" dialog ---
   const handleOpenSingleDeleteDialog = (chatId) => {
     setChatToDeleteId(chatId);
     setIsSingleDeleteDialogOpen(true);
@@ -282,17 +292,16 @@ function HdfcGpt() {
         throw new Error("Failed to delete the conversation on the server.");
       }
 
-      // If the currently active chat is the one being deleted, switch to a new chat screen
       if (currentConversation.id === chatToDeleteId) {
         handleNewChat();
       }
-      // Note: No need to manually update the 'conversations' state.
-      // The 'onSnapshot' listener will automatically receive the update from Firestore.
-    } catch (error) {
+      
+    }
+     catch (error){
       console.error('Failed to delete conversation:', error);
-      // Optionally, show an error message to the user here
-    } finally {
-      handleCloseSingleDeleteDialog(); // Close the dialog in all cases
+    } 
+    finally {
+      handleCloseSingleDeleteDialog();
     }
   };
 
@@ -304,7 +313,7 @@ function HdfcGpt() {
           onSelectConversation={handleSelectConversation}
           onNewChat={handleNewChat}
           onOpenDeleteDialog={handleOpenDeleteDialog}
-          onOpenSingleDeleteDialog={handleOpenSingleDeleteDialog} // Pass the new handler
+          onOpenSingleDeleteDialog={handleOpenSingleDeleteDialog}
           activeId={currentConversation.id}
         />
         <ChatWindow
@@ -316,7 +325,6 @@ function HdfcGpt() {
         />
       </Box>
 
-      {/* "Delete All" Dialog */}
       <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
         <DialogTitle>{"Delete All Chat History?"}</DialogTitle>
         <DialogContent>
@@ -332,7 +340,6 @@ function HdfcGpt() {
         </DialogActions>
       </Dialog>
 
-      {/* --- NEW: "Delete Single Chat" Dialog --- */}
       <Dialog open={isSingleDeleteDialogOpen} onClose={handleCloseSingleDeleteDialog}>
         <DialogTitle>{"Delete This Chat?"}</DialogTitle>
         <DialogContent>

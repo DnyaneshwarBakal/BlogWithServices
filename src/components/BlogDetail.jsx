@@ -1,3 +1,6 @@
+// blog detail page like date
+
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Card, CardMedia, CardContent, Button } from '@mui/material';
@@ -15,7 +18,7 @@ function BlogDetail() {
     setPost(foundPost);
   }, [id, getPostById]);
 
-  // --- THIS IS THE FIX ---
+   
   // A helper function to safely format the timestamp from Firestore
   const formatTimestamp = (timestamp) => {
     // Check if the timestamp exists and has the toDate method (it's a Firestore Timestamp)
@@ -29,7 +32,7 @@ function BlogDetail() {
     // If all else fails, return a default string
     return 'Date not available';
   };
-  // ----------------------
+   
 
   if (!post) {
     return (

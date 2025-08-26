@@ -18,7 +18,7 @@ import About from './components/About';
 import Contact from './components/Contact';
 import LandingPage from './components/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import HdfcGpt from './components/HdfcGpt'; // <-- 1. IMPORT THE NEW HDFCGPT COMPONENT
+import HdfcGpt from './components/HdfcGpt';  
 
 
 
@@ -44,8 +44,7 @@ const AppLayout = ({ mode, toggleColorMode }) => (
             : 'linear-gradient(-45deg, #023, #023e8a, #edeff0ff, #0096c7)',
         backgroundSize: '400% 400%',
         animation: 'gradientAnimation 15s ease infinite',
-        // Removed py: 4 to allow the HdfcGpt page to control its own padding
-        // and fill the full height.
+        
       }}
     >
       <Outlet />
@@ -103,8 +102,8 @@ function App() {
         { path: 'contact', element: <Contact /> }, 
         { path: 'team', element: <Team /> },
         { path: 'about', element: <About /> },
-        // --- THIS IS THE FIX ---
-        { path: 'hdfcgpt', element: <HdfcGpt /> }, // <-- 2. ADD THE ROUTE FOR THE NEW PAGE
+   
+        { path: 'hdfcgpt', element: <HdfcGpt /> }, 
       ],
     },
   ]);

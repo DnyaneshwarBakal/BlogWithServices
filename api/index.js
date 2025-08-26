@@ -1,6 +1,4 @@
 // File: /api/index.js
-
-// --- Imports ---
 import express from 'express';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin';
@@ -34,11 +32,10 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 
 // ==========================================================
-// ---                ALL YOUR API ROUTES                 ---
+// ---                ALL  API ROUTES                 ---
 // ==========================================================
-// Blog api logic
-// Add this new route in your /api/index.js file
 
+// Blog api logic
 app.post('/api/generateBlog', async (req, res) => {
   try {
     const { title } = req.body; // 1. Expect a 'title' from the request
@@ -48,7 +45,10 @@ app.post('/api/generateBlog', async (req, res) => {
     }
 
     // 2. Create a specific, simple prompt for the AI
-    const prompt = `Write a blog post about the following topic: "${title}". The post should be engaging and well-structured.`;
+    // const prompt = `Write a blog post about the following topic: "${title}". The post should be engaging and well-structured.`;
+       const prompt = `You are an expert blog post writer.The user has provided the following title for a blog post: "${title}".The post should be engaging and well-structured. do not  include  *,# or any other markdown formatting
+      `;
+     
 
     // 3. Call the AI model
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
@@ -63,7 +63,7 @@ app.post('/api/generateBlog', async (req, res) => {
     res.status(500).json({ error: 'Failed to generate blog content from the AI service.' });
   }
 });
-// --- HDFCGPT Chat Route (DEFINITIVE CORRECT LOGIC) ---
+// --- HDFCGPT Chat Route 
 app.post('/api/chat', async (req, res) => {
   try {
     const { userId, messages, conversationId } = req.body;
@@ -159,11 +159,6 @@ app.delete('/api/conversations/:conversationId', async (req, res) => {
     if (!conversationId) {
       return res.status(400).json({ error: 'Conversation ID is required.' });
     }
-
-    // SECURITY NOTE: In a real-world app, you should verify the user's ID token here
-    // and check that the document they are trying to delete actually belongs to them
-    // before proceeding with the deletion.
-
     // 2. Get a reference to the specific document in Firestore
     const docRef = db.collection('conversations').doc(conversationId);
 

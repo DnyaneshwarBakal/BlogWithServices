@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // --- IMPORT useNavigate ---
+import { useNavigate } from 'react-router-dom'; 
 import {
     Container,
     Typography,
@@ -12,8 +12,8 @@ import {
     Button,
     CardActions,
 } from '@mui/material';
-import { useAuth } from '../context/AuthContext'; // --- IMPORT useAuth ---
-import { useLoginModal } from '../context/LoginModalContext'; // --- IMPORT useLoginModal ---
+import { useAuth } from '../context/AuthContext';
+import { useLoginModal } from '../context/LoginModalContext'; 
 
 // --- Services Data (No Changes Here) ---
 const servicesData = [
@@ -114,7 +114,7 @@ function Services() {
 
             <Grid container spacing={4} justifyContent="center">
                 {servicesData.map((service, index) => (
-                    <Grid item key={index} xs={4} sm={4} md={4} lg={3}>
+                    <Grid item key={index} xs={12} sm={4} md={4} lg={3}>
                         <Card
                             sx={{
                                 height: '100%',

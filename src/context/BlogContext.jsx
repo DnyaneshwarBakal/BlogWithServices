@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { db } from '../firebase'; // Your initialized firestore instance
+import { db } from '../firebase'; //  initialized firestore instance
 import {
   collection,
   query,
@@ -53,7 +53,7 @@ export function BlogProvider({ children }) {
 
   const updatePost = async (updatedPost) => {
     const postDocRef = doc(db, 'posts', updatedPost.id);
-    // You need to remove the id from the object before updating
+    // need to remove the id from the object before updating
     const { id, ...postData } = updatedPost;
     await updateDoc(postDocRef, postData);
   };
